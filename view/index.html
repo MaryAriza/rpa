@@ -138,33 +138,32 @@
 
                 <div class="col-md-6">
                     <div class="ibox-title">
-                        <h5>Datos de inicio</h5>
-
+                        <h5>Datos del proceso</h5>
                     </div>
                     <ul class="list-group clear-list m-t">
                         <li class="list-group-item fist-item">
                             <span class="float-right datoInicio">
                                 0
                             </span>
-                            <span class="label label-success">1</span> Fecha de inicio
+                            <span class="label label-success"><i class="far fa-clock"></i></span> Fecha de inicio
                         </li>
                         <li class="list-group-item">
                             <span class="float-right datoPromedio">
                                 0
                             </span>
-                            <span class="label label-info">2</span> Promedio de tiempo por registro
+                            <span class="label label-info"><i class="fas fa-chart-area"></i></span> Promedio de tiempo por registro
                         </li>
                         <li class="list-group-item">
                             <span class="float-right datoTrabajo">
                                 0
                             </span>
-                            <span class="label label-primary ">3</span> Tiempo de trabajo
+                            <span class="label label-primary "><i class="fas fa-stopwatch"></i></span> Tiempo de trabajo
                         </li>
                         <li class="list-group-item">
                             <span class="float-right bg-gray datoErrores">
                                 0
                             </span>
-                            <span class="label label-danger">4</span> Errores
+                            <span class="label label-danger"><i class="fas fa-bug"></i></span> Errores durante esta ejecución
                         </li>
                     </ul>
                 </div>
@@ -385,20 +384,30 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
     <script type="text/javascript">
 
-$('#detener').hide();
-      //es2015
       var socket = io()
-    //   socket.emit('initializate', 1);
-    //   socket.on('initializate', function(data){
-    //       if(data.active==false){
-    //         $('#detener').hide();
-    //         $('#iniciar').show();
-    //       }else{
-    //         $('#detener').show();
-    //         $('#iniciar').hide();
-    //       }
-    //   });
-      //recibiendo un numero random cada dos segundos
+      socket.emit('initializate', 1);
+      socket.on('initializate', function(data){
+          console.log(data);
+          if(data.active==false){
+            $('#detener').hide();
+            $('#iniciar').show();
+          }else{
+            $('#detener').show();
+            $('#iniciar').hide();
+          }
+            $('.num1').html(data.totalReg);
+            $('.num2').html(data.poblados);
+            $('.num3').html(data.gacela);
+            $('.num4').html(data.nogacela);
+            $('.datoErrores').html(data.errores);
+            $('.datoInicio').html(data.fechaInicio);
+            $('.datoTrabajo').html(data.trabajo);
+            $('.datoPromedio').html(data.promedio);
+      });
+
+      socket.on('reset', function(data){
+        socket.emit('initializate', 1);
+      })
       socket.on('cantidadP', function(data){
         $('.num1').html(data);
       })
@@ -414,13 +423,7 @@ $('#detener').hide();
 
       socket.on('datoInicio', function(data){
         $('.datoInicio').html(data);
-        $('#detener').show();
-        $('#iniciar').hide();
       })
-
-      //socket.on('datoPromedio', function(data){
-        //$('.datoPromedio').html(data);
-      //})
 
       socket.on('datoTrabajo', function(data){
         $('.datoTrabajo').html(data);
@@ -430,25 +433,35 @@ $('#detener').hide();
         $('.datoErrores').html(data);
       })
 
+      socket.on('datoPromedio', function(data){
+        $('.datoPromedio').html(data);
+      })
+
       socket.on('min', function(num){
         $('.sidebar-list').prepend(num);
       })
 
-      socket.on('totalPoblado', function(num){
-        //colocar el total poblado
+      socket.on('activarApagado', function(data){
+        if(data){
+            $('#detener').show('slow');
+            $('#iniciar').hide('slow');
+        }else{
+            $('#iniciar').show('slow');
+            $('#detener').hide('slow');
+        }
       })
+
+
       
 
       $('#iniciar').click(function(){
         $(this).hide('slow');
-        $('#detener').show('slow');
         var activar = 1;
         socket.emit('activar', activar);
       })
 
       $('#detener').click(function(){
         $(this).hide('slow');
-        $('#iniciar').show('slow');
         var desactivar = 0;
         socket.emit('desactivar', desactivar);
       })
@@ -499,7 +512,7 @@ function getRandomData() {
 
         while (data.length < maximum) {
             var previous = data.length ? data[data.length - 1] : 50;
-            var y =Number(data1.replace(/ seg\/reg/,""));
+            var y =Number(data1);
             data.push(y < 0 ? 0 : y > 100 ? 100 : y);
         }
 
@@ -568,8 +581,8 @@ function getRandomData() {
     });
 
     // Update the random dataset at 25FPS for a smoothly-animating chart
-    socket.on("datoPromedio",function updateRandom(data) {
-        $('.datoPromedio').html(data);
+    socket.on("tiempoTomado",function updateRandom(data) {
+        console.log(data);
         series[0].data = getData(data);
         plot.setData(series);
         plot.draw();

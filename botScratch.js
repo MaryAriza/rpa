@@ -14,13 +14,31 @@ class botScrach {
         this.poblados=0;
         this.aux = 0;
         this.handlerInterval=null;
-        this.dateInit=null;
+        this.dateInit="No iniciado";
         this.datefinish=null;
         this.siGacela=0;
         this.noGacela=0;
         this.totalRegister=0;
         this.porPoblar=0;
         this.active=false;
+        this.minutes=0;
+        this.promedio=0;
+    }
+
+    resetValues(){
+        this.count = 0;
+        this.count2=0;
+        this.poblados=0;
+        this.aux = 0;
+        this.dateInit="No iniciado";
+        this.datefinish=null;
+        this.siGacela=0;
+        this.noGacela=0;
+        this.totalRegister=0;
+        this.porPoblar=0;
+        this.active=false;
+        this.minutes=0;
+        this.promedio=0;
     }
 
     iniciarContador(err,socket){
@@ -57,7 +75,6 @@ class botScrach {
     }
 
     async buscarPlacas(arr,g,err,socket){
-        this.active=true;
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
         this.iniciarContador(err,socket);
@@ -75,10 +92,14 @@ class botScrach {
             let now= new Date();
             this.datefinish = date.format(now, 'YYYY/MM/DD HH:mm:ss');
             let second = date.subtract(date.parse(this.datefinish, 'YYYY/MM/DD HH:mm:ss'), date.parse(this.dateInit, 'YYYY/MM/DD HH:mm:ss')).toSeconds();
-            let minutes = date.subtract(date.parse(this.datefinish, 'YYYY/MM/DD HH:mm:ss'), date.parse(this.dateInit, 'YYYY/MM/DD HH:mm:ss')).toMinutes();                                    
-            await err.guardarRegistro(this.totalRegister,this.poblados,this.siGacela,this.noGacela,this.dateInit,this.datefinish,(second/this.poblados),minutes,err.cantErrores)
+            this.promedio =(second/this.poblados)
+            this.minutes = date.subtract(date.parse(this.datefinish, 'YYYY/MM/DD HH:mm:ss'), date.parse(this.dateInit, 'YYYY/MM/DD HH:mm:ss')).toMinutes();                                    
+            await err.guardarRegistro(this.totalRegister,this.poblados,this.siGacela,this.noGacela,this.dateInit,this.datefinish,this.promedio,this.minutes,err.cantErrores)
             console.log("Bot finalizado");
+            socket.emit('activarApagado', false);
             clearInterval(this.handlerInterval);
+            socket.emit("reset",true);
+            this.resetValues();
             await browser.close();
         }catch(e){
             console.log(e.stack);
@@ -100,15 +121,16 @@ class botScrach {
                         this.porPoblar--;
                         socket.emit("totalPoblado",this.poblados);
                         socket.emit("cantidadP",this.porPoblar);
-                        this.aux=this.count;
                         let now= new Date();
                         this.datefinish = date.format(now, 'YYYY/MM/DD HH:mm:ss');
                         let second = date.subtract(date.parse(this.datefinish, 'YYYY/MM/DD HH:mm:ss'), date.parse(this.dateInit, 'YYYY/MM/DD HH:mm:ss')).toSeconds();
-                        let minutes = date.subtract(date.parse(this.datefinish, 'YYYY/MM/DD HH:mm:ss'), date.parse(this.dateInit, 'YYYY/MM/DD HH:mm:ss')).toMinutes();                        
-                        let promedio =(second/this.poblados)
-                        socket.emit("datoPromedio",promedio.toFixed(2)+" seg/reg");
-                        socket.emit("datoTrabajo",minutes+" minutos");
-                        console.log("Fecha de inicio: "+this.dateInit+", fecha de fin: "+this.datefinish+", Cantidad de registros: "+this.poblados+", promedio de tiempo por cada registro: "+ (second/this.poblados)+" seg, Ultima Placa actualizada: "+arr[i].placagacela+", proceso hecho en "+minutes+" minutos");
+                        this.minutes = date.subtract(date.parse(this.datefinish, 'YYYY/MM/DD HH:mm:ss'), date.parse(this.dateInit, 'YYYY/MM/DD HH:mm:ss')).toMinutes();                        
+                        this.promedio =(second/this.poblados);
+                        socket.emit("datoPromedio",this.promedio.toFixed(2)+" seg/reg");
+                        socket.emit("datoTrabajo",this.minutes+" minutos");
+                        socket.emit("tiempoTomado",(this.count-this.aux)/1000);
+                        console.log("Fecha de inicio: "+this.dateInit+", fecha de fin: "+this.datefinish+", Cantidad de registros: "+this.poblados+", promedio de tiempo por cada registro: "+ this.promedio+" seg, Ultima Placa actualizada: "+arr[i].placagacela+", proceso hecho en "+this.minutes+" minutos");
+                        this.aux=this.count;
                         await this.refrescarTexto(page,'#placa',12);
                     }
                 }catch(e){

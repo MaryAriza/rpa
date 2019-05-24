@@ -20,7 +20,6 @@ class Conection{
     
     crearConeccion() {
       try{
-        console.log();
         this.connection = mysql.createConnection({
           host     : this.host,
           user     : this.user,

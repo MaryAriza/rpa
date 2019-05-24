@@ -33,8 +33,8 @@ class ErrorManager{
                 if(!page.isClosed()){
                     html = await page.$eval('body', e => e.outerHTML);
                     let fecha2 = date.format(now, 'YYYY-MM-DD-HH-mm-ss');
-                    await page.screenshot({path: './capturas/'+fecha2+"-"+placa+'.png'});
-                    urlCapture = 'capturas/'+fecha2+placa+'.png';
+                    await page.screenshot({path: './view/img/capturas/'+fecha2+"-"+placa+'.png'});
+                    urlCapture = fecha2+placa+'.png';
                 }
             }catch(e){
 
@@ -75,6 +75,9 @@ class ErrorManager{
     }
 
     guardarRegistro(load,poblado,sigacela,nogacela,fechaInicio,fechaFin,datopromedio,datotrabajo,datoerrores){
+        if(datopromedio=='Infinity'){
+            datopromedio=0;
+        }
         let sql = `INSERT INTO registro (cargados_reg,poblados_reg,no_gacela_reg,si_gacela_reg,fecha_inicio_reg,fecha_fin_reg,promedio_reg,tiempo_min_reg,cant_errores_reg)`
         +` VALUES (${load},${poblado},${nogacela},${sigacela},'${fechaInicio}','${fechaFin}',${datopromedio},${datotrabajo},${datoerrores})`
         this.con.query(sql,(error, results, fields)=>{

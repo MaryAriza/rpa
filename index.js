@@ -14,31 +14,48 @@ server.listen(PORT, () => {
 })
 
 app.use(express.static(path.join(__dirname, 'view')))
-
+const Gacela = require("./Gacela");
+const Error_manager = require('./errorManager');
+let g = new Gacela;
+let e = new Error_manager;
 //escuchando el evento connection
 io.on('connection', function(socket){
-      const Gacela = require("./Gacela");
-      const Error_manager = require('./errorManager');
-      let g = new Gacela;
-      let e = new Error_manager;
-    socket.on('activar', function(num){
-      try{
-          console.log("Iniciando Bot...")
-          g.consultarNulos(g,e,io);
-      }catch(er){
-          e.guardarError(null,null,null,er);
-      }
-    })
+      socket.on('activar', function(num){
+        try{
+          if(!g.bot.active){
+            console.log("Iniciando Bot...")
+            g.bot.active=true;
+            io.emit('activarApagado', true);
+            g.consultarNulos(g,e,io);
+          }
+        }catch(er){
+            e.guardarError(null,null,null,er);
+        }
+      })
 
     
-    // socket.on('initializate', function(data){
-    //   socket.emit('initializate', 1);
-    // });
+    socket.on('initializate', function(data){
+        socket.emit('initializate',{
+          active:g.bot.active,
+          totalReg:g.bot.totalRegister,
+          poblados:g.bot.poblados,
+          gacela:g.bot.siGacela,
+          nogacela:g.bot.noGacela,
+          errores:e.cantErrores,
+          fechaInicio:g.bot.dateInit,
+          trabajo:g.bot.minutes+" minutos",
+          promedio:g.bot.promedio.toFixed(2)+" seg/reg"
+        })
+    });
+    
+    
 
     socket.on('desactivar', function(num){
       try{
-          console.log("Desactivando Bot...")
-          g.apagarGacelaBot();
+          if(g.bot.active){
+            console.log("Desactivando Bot...")
+            g.apagarGacelaBot();
+          }
       }catch(er){
           e.guardarError(null,null,null,er);
       }
