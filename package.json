@@ -14,25 +14,15 @@
   "author": "RonnySotillet",
   "license": "ISC",
   "dependencies": {
-    "checksum": "^0.1.1",
     "cheerio": "^1.0.0-rc.3",
     "connection-tester": "^0.2.0",
     "date-and-time": "^0.6.3",
-    "dictionary-es": "^1.2.3",
     "express": "^4.17.0",
-    "image-to-text": "^1.0.8",
     "is-online": "^8.2.0",
     "mysql": "^2.17.1",
     "nodemon": "^1.19.0",
-    "osmosis": "^1.1.10",
     "ping": "^0.2.2",
     "puppeteer": "^1.16.0",
-    "request": "^2.88.0",
-    "request-promise": "^4.2.4",
-    "retext": "^6.0.1",
-    "retext-spell": "^2.4.0",
-    "socket.io": "^2.2.0",
-    "tesseract.js": "^2.0.0-alpha.8",
-    "vfile-reporter": "^5.1.1"
+    "socket.io": "^2.2.0"
   }
 }

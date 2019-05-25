@@ -4,7 +4,6 @@
 *  version 2.8
 *
 -->
-
 <!DOCTYPE html>
 <html>
 
@@ -30,9 +29,9 @@
 
 </head>
 
-<body>
+<body class="pace-done skin-1">
     <div id="wrapper">
-        <nav class="navbar-default navbar-static-side" role="navigation">
+        <nav class="navbar-default navbar-static-side" style="margin-top: 0px;" role="navigation">
             <div class="sidebar-collapse">
                 <ul class="nav metismenu" id="side-menu">
                     <li class="nav-header">
@@ -62,127 +61,126 @@
 
         <div id="page-wrapper" class="gray-bg dashbard-1">
             <div class="row border-bottom">
-                <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+                <nav class="navbar navbar-static-top" role="navigation" style="background: #1c84c6;">
                     <div class="navbar-header">
                         <a class="minimalize-styl-2 btn btn-primary " href="#" id="iniciar"><i class="fa fa-power-off"> Iniciar</i></a>
                         <a class="minimalize-styl-2 btn btn-danger " href="#" id="detener"><i class="fa fa-power-off"> Detener</i></a>
 
                     </div>
                     <ul class="nav navbar-top-links navbar-right">
-
                         <li>
-                            <a href="login.html">
-                                <i class="fa fa-sign-out"></i> Salir
+                            <a class="right-sidebar-toggle" style="color: white;">
+                                <i class="fa fa-tasks"></i>
                             </a>
                         </li>
                         <li>
-                            <a class="right-sidebar-toggle">
-                                <i class="fa fa-tasks"></i>
+                            <a href="login.html" style="color: white;">
+                                <i class="fas fa-sign-out-alt"></i>
                             </a>
                         </li>
                     </ul>
 
                 </nav>
             </div>
-            <div class="row">
-                <div class="col-lg-3">
-                    <div class="ibox ">
-                        <div class="ibox-title">
-                            <span class="label label-success float-right"><i class="fas fa-search"></i></span>
-                            <h5>Por buscar</h5>
-                        </div>
-                        <div class="ibox-content">
-                            <h1 class="no-margins num1 text-success">0</h1>
-                            <small>Registros cargados que aun no han sido procesados</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="ibox ">
-                        <div class="ibox-title">
-                            <span class="label label-info float-right"><i class="fas fa-truck-loading"></i></span>
-                            <h5>Poblados</h5>
-                        </div>
-                        <div class="ibox-content">
-                            <h1 class="no-margins num2 text-info">0</h1>
-                            <small>Registros cargados que ya fueron procesados</small>
+            <br>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="ibox ">
+                            <div class="ibox-title">
+                                <span class="label label-success float-right"><i class="fas fa-search"></i></span>
+                                <h5>Por buscar</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <h1 class="no-margins num1 text-success">0</h1>
+                                <small>Registros cargados que aun no han sido procesados</small>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="ibox ">
-                        <div class="ibox-title">
-                            <span class="label label-primary float-right"><i class="far fa-thumbs-up"></i></span>
-                            <h5>Con Datos</h5>
-                        </div>
-                        <div class="ibox-content">
-                            <h1 class="no-margins num3 text-navy">0</h1>
-                            <small>Registros encontrados que poseen datos en Gacela</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <div class="ibox ">
-                        <div class="ibox-title">
-                            <span class="label label-danger float-right"><i class="far fa-thumbs-down"></i></span>
-                            <h5>Sin datos</h5>
-                        </div>
-                        <div class="ibox-content">
-                            <h1 class="no-margins num4 text-danger">0</h1>
-                            <small>Registros encontrados que no poseen datos en Gacela</small>
+                    <div class="col-lg-3">
+                        <div class="ibox ">
+                            <div class="ibox-title">
+                                <span class="label label-info float-right"><i class="fas fa-truck-loading"></i></span>
+                                <h5>Poblados</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <h1 class="no-margins num2 text-info">0</h1>
+                                <small>Registros cargados que ya fueron procesados</small>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="row  border-bottom white-bg dashboard-header">
-
-                <div class="col-md-6">
-                    <div class="ibox-title">
-                        <h5>Datos del proceso</h5>
-                    </div>
-                    <ul class="list-group clear-list m-t">
-                        <li class="list-group-item fist-item">
-                            <span class="float-right datoInicio">
-                                0
-                            </span>
-                            <span class="label label-success"><i class="far fa-clock"></i></span> Fecha de inicio
-                        </li>
-                        <li class="list-group-item">
-                            <span class="float-right datoPromedio">
-                                0
-                            </span>
-                            <span class="label label-info"><i class="fas fa-chart-area"></i></span> Promedio de tiempo por registro
-                        </li>
-                        <li class="list-group-item">
-                            <span class="float-right datoTrabajo">
-                                0
-                            </span>
-                            <span class="label label-primary "><i class="fas fa-stopwatch"></i></span> Tiempo de trabajo
-                        </li>
-                        <li class="list-group-item">
-                            <span class="float-right bg-gray datoErrores">
-                                0
-                            </span>
-                            <span class="label label-danger"><i class="fas fa-bug"></i></span> Errores durante esta ejecución
-                        </li>
-                    </ul>
-                </div>
-                <div class="col-md-6">
-                    <div class="ibox ">
-                        <div class="ibox-title">
-                            <h5>Tiempo de registros</h5>
-
+                    <div class="col-lg-3">
+                        <div class="ibox ">
+                            <div class="ibox-title">
+                                <span class="label label-primary float-right"><i class="far fa-thumbs-up"></i></span>
+                                <h5>Con Datos</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <h1 class="no-margins num3 text-navy">0</h1>
+                                <small>Registros encontrados que poseen datos en Gacela</small>
+                            </div>
                         </div>
-                        <div class="ibox-contnt">
-
-                            <div class="flot-chart">
-                                <div class="flot-chart-content" id="flot-line-chart-moving"></div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="ibox ">
+                            <div class="ibox-title">
+                                <span class="label label-danger float-right"><i class="far fa-thumbs-down"></i></span>
+                                <h5>Sin datos</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <h1 class="no-margins num4 text-danger">0</h1>
+                                <small>Registros encontrados que no poseen datos en Gacela</small>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
+                <div class="row  border-bottom white-bg dashboard-header">
+                    <div class="col-md-6">
+                        <div class="ibox-title">
+                            <h5>Datos del proceso</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <ul class="list-group clear-list m-t">
+                                <li class="list-group-item fist-item">
+                                    <span class="float-right datoInicio">
+                                        0
+                                    </span>
+                                    <span class="label label-success"><i class="far fa-clock"></i></span> Fecha de inicio
+                                </li>
+                                <li class="list-group-item">
+                                    <span class="float-right datoPromedio">
+                                        0
+                                    </span>
+                                    <span class="label label-info"><i class="fas fa-chart-area"></i></span> Promedio de tiempo por registro
+                                </li>
+                                <li class="list-group-item">
+                                    <span class="float-right datoTrabajo">
+                                        0
+                                    </span>
+                                    <span class="label label-primary "><i class="fas fa-stopwatch"></i></span> Tiempo de trabajo
+                                </li>
+                                <li class="list-group-item">
+                                    <span class="float-right bg-gray datoErrores">
+                                        0
+                                    </span>
+                                    <span class="label label-danger"><i class="fas fa-bug"></i></span> Errores durante esta ejecución
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="ibox ">
+                            <div class="ibox-title">
+                                <h5>Tiempo de registros</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <div class="flot-chart">
+                                    <div class="flot-chart-content" id="flot-line-chart-moving"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="footer">

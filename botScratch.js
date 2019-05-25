@@ -134,8 +134,7 @@ class botScrach {
                         await this.refrescarTexto(page,'#placa',12);
                     }
                 }catch(e){
-                    console.log("el error buscando placa fue: "+e.stack);
-                    err.guardarError(page,null,arrs[i].placagacela,e,socket);
+                    err.guardarError(page,null,arr[i].placagacela,e,socket);
                     //guardar error ,hacer ping a gacela, si es false hacer alive de internet, si es alive continuar con el ping a gacela, cuando sea alive detener la ejecucion del ping e intentar realizar nuevamente la consulta, intentar 3 veces. sino no iniciar el bot hasta que se haga manualmente, si lo logra colocar como corregido.
                 }
             }else{
@@ -201,15 +200,20 @@ class botScrach {
     } 
 
     async refrescarTexto(page,selector,it){
-        let texto = await page.$eval('#externo', e => e.text);
-        if(texto=="Realizar esta consulta con SISA"){
-            await page.click("#externo"); 
+        try{
+            let texto = await page.$eval('#externo', e => e.text);
+            if(texto=="Realizar esta consulta con SISA"){
+                await page.click("#externo"); 
+            }
+            await page.type(selector,'');
+            for(let i = 0;i<it;i++){
+                await page.keyboard.press('Backspace');
+            }
+             return true;
+        }catch(e){
+            return false;
         }
-        await page.type(selector,'');
-        for(let i = 0;i<it;i++){
-            await page.keyboard.press('Backspace');
-        }
-        return true;
+        
     }
 
     evaluarTope(str){

@@ -19,17 +19,22 @@ class ErrorManager{
         return connectionTester.test('consultas.laequidadseguros.coop', 8081, 1000);
     }
 
-    async pingServidor(){
-        return ping.promise.probe("175.0.10.201");
+    pingServidor(){
+        return connectionTester.test('175.0.10.201', 80, 1000);
     }
 
     async guardarError(page,sql,placa,err,socket){
         let now= new Date();
         let html=null;
         let urlCapture =null;
-
+        let ping_gacela = {success:false};
+        let ping_servidor = {success:false};//a.alive
+        let ping_internet=false;
         if(page!=null){
             try{
+                ping_gacela = await this.pingGacela();
+                ping_servidor = await this.pingServidor();//a.alive
+                ping_internet= await isOnline();
                 if(!page.isClosed()){
                     html = await page.$eval('body', e => e.outerHTML);
                     let fecha2 = date.format(now, 'YYYY-MM-DD-HH-mm-ss');
@@ -41,10 +46,7 @@ class ErrorManager{
             }
         }
         
-        let ping_gacela = await this.pingGacela();
-        let ping_serv = await this.pingServidor();//a.alive
-        let ping_servidor = ping_serv.alive;
-        let  ping_internet= await isOnline();
+
         let sql1=(sql!=null)?sql.replace(/'/g, "`"):"";
         let html1=(html!=null)?html.replace(/'/g, "`"):"";
         let error=(err!=null)?err.message.replace(/'/g, "`"):"";
@@ -56,7 +58,7 @@ class ErrorManager{
             +html1+"','"
             +error+"',"
             +ping_gacela.success+","
-            +ping_servidor+","
+            +ping_servidor.success+","
             +ping_internet+","
             +"CURDATE())";
             let _this=this;
