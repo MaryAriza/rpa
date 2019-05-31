@@ -188,7 +188,7 @@
                     10GB of <strong>250GB</strong> Free.
                 </div>
                 <div>
-                    <strong>Copyright</strong> Example Company &copy; 2014-2018
+                    <strong>Copyright</strong> Departamento de Desarrollo Grupo Novus LTDA &copy; 2019
                 </div>
             </div>
         </div>
@@ -198,10 +198,10 @@
 
                 <ul class="nav nav-tabs navs-2">
                     <li>
-                        <a class="nav-link active" data-toggle="tab" href="#tab-2"> Errores </a>
+                        <a class="nav-link active" data-toggle="tab" href="#tab-2"><i class="fas fa-bug"></i> Errores </a>
                     </li>
                     <li>
-                        <a class="nav-link" data-toggle="tab" href="#tab-3"> <i class="fa fa-gear"></i> </a>
+                        <a class="nav-link" data-toggle="tab" href="#tab-3"> Registros </a>
                     </li>
                 </ul>
 
@@ -210,10 +210,10 @@
                     <div id="tab-2" class="tab-pane active">
 
                         <div class="sidebar-title">
-                            <h3> <i class="fa fa-cube"></i> Lista de Errores</h3>
+                            <h3>  Lista de Errores</h3>
                         </div>
 
-                        <ul class="sidebar-list">
+                        <ul class="sidebar-list" id="error_list">
 
                         </ul>
 
@@ -222,115 +222,13 @@
                     <div id="tab-3" class="tab-pane">
 
                         <div class="sidebar-title">
-                            <h3><i class="fa fa-gears"></i> Settings</h3>
-                            <small><i class="fa fa-tim"></i> You have 14 projects. 10 not completed.</small>
+                            <h3><i class="far fa-calendar-alt"></i> Ejecuciones anteriores del bot</h3>
+                            <small><i class="fas fa-chevron-right"></i> Realizadas: <b id="cant_ej">0</b> </small>
                         </div>
 
-                        <div class="setings-item">
-                            <span>
-                        Show notifications
-                    </span>
-                            <div class="switch">
-                                <div class="onoffswitch">
-                                    <input type="checkbox" name="collapsemenu" class="onoffswitch-checkbox" id="example">
-                                    <label class="onoffswitch-label" for="example">
-                                        <span class="onoffswitch-inner"></span>
-                                        <span class="onoffswitch-switch"></span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="setings-item">
-                            <span>
-                        Disable Chat
-                    </span>
-                            <div class="switch">
-                                <div class="onoffswitch">
-                                    <input type="checkbox" name="collapsemenu" checked class="onoffswitch-checkbox" id="example2">
-                                    <label class="onoffswitch-label" for="example2">
-                                        <span class="onoffswitch-inner"></span>
-                                        <span class="onoffswitch-switch"></span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="setings-item">
-                            <span>
-                        Enable history
-                    </span>
-                            <div class="switch">
-                                <div class="onoffswitch">
-                                    <input type="checkbox" name="collapsemenu" class="onoffswitch-checkbox" id="example3">
-                                    <label class="onoffswitch-label" for="example3">
-                                        <span class="onoffswitch-inner"></span>
-                                        <span class="onoffswitch-switch"></span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="setings-item">
-                            <span>
-                        Show charts
-                    </span>
-                            <div class="switch">
-                                <div class="onoffswitch">
-                                    <input type="checkbox" name="collapsemenu" class="onoffswitch-checkbox" id="example4">
-                                    <label class="onoffswitch-label" for="example4">
-                                        <span class="onoffswitch-inner"></span>
-                                        <span class="onoffswitch-switch"></span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="setings-item">
-                            <span>
-                        Offline users
-                    </span>
-                            <div class="switch">
-                                <div class="onoffswitch">
-                                    <input type="checkbox" checked name="collapsemenu" class="onoffswitch-checkbox" id="example5">
-                                    <label class="onoffswitch-label" for="example5">
-                                        <span class="onoffswitch-inner"></span>
-                                        <span class="onoffswitch-switch"></span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="setings-item">
-                            <span>
-                        Global search
-                    </span>
-                            <div class="switch">
-                                <div class="onoffswitch">
-                                    <input type="checkbox" checked name="collapsemenu" class="onoffswitch-checkbox" id="example6">
-                                    <label class="onoffswitch-label" for="example6">
-                                        <span class="onoffswitch-inner"></span>
-                                        <span class="onoffswitch-switch"></span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="setings-item">
-                            <span>
-                        Update everyday
-                    </span>
-                            <div class="switch">
-                                <div class="onoffswitch">
-                                    <input type="checkbox" name="collapsemenu" class="onoffswitch-checkbox" id="example7">
-                                    <label class="onoffswitch-label" for="example7">
-                                        <span class="onoffswitch-inner"></span>
-                                        <span class="onoffswitch-switch"></span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
+                        <ul class="sidebar-list" id="reg_list">
 
-                        <div class="sidebar-content">
-                            <h4>Settings</h4>
-                            <div class="small">
-                                I belive that. Lorem Ipsum is simply dummy text of the printing and typesetting industry. And typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s. Over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
-                            </div>
-                        </div>
+                        </ul>
 
                     </div>
                 </div>
@@ -438,6 +336,19 @@
       socket.on('min', function(num){
         $('.sidebar-list').prepend(num);
       })
+
+      socket.on('nuevoError', function(data){
+        $('#error_list').prepend(data.data);
+      })
+
+      socket.on('addReg', function(data){
+        $('#reg_list').prepend(data.html);
+      })
+      socket.on('cant_ej', function(data){
+        $('.cant_ej').html(data);
+      })
+      
+      
 
       socket.on('activarApagado', function(data){
         if(data){

@@ -30,6 +30,7 @@ class ErrorManager{
         let ping_gacela = {success:false};
         let ping_servidor = {success:false};//a.alive
         let ping_internet=false;
+        let fecha2 = date.format(now, 'YYYY-MM-DD-HH-mm-ss');
         if(page!=null){
             try{
                 ping_gacela = await this.pingGacela();
@@ -37,9 +38,8 @@ class ErrorManager{
                 ping_internet= await isOnline();
                 if(!page.isClosed()){
                     html = await page.$eval('body', e => e.outerHTML);
-                    let fecha2 = date.format(now, 'YYYY-MM-DD-HH-mm-ss');
                     await page.screenshot({path: './view/img/capturas/'+fecha2+"-"+placa+'.png'});
-                    urlCapture = fecha2+placa+'.png';
+                    urlCapture = fecha2+'-'+placa+'.png';
                 }
             }catch(e){
 
@@ -62,18 +62,71 @@ class ErrorManager{
             +ping_internet+","
             +"CURDATE())";
             let _this=this;
-            this.con.query(query,(error, results, fields)=>{
-                if (error){
-                    console.log(error)
+            this.con.query(query,(err, results, fields)=>{
+                if (err){
+                    console.log(err)
                 } else if(results.affectedRows==0){
                     console.log("No se actualizaron los datos del error",results);
                 }else{
                     _this.cantErrores++;
+                    ping_gacela=(ping_gacela.success)?"primary":"danger";
+                    ping_servidor=(ping_servidor.success)?"primary":"danger";
+                    ping_internet=(ping_internet)?"primary":"danger";
                     socket.emit("datoErrores",_this.cantErrores);
+                    socket.emit('nuevoError',{data:'<li class="sidebar-message">'
+                    +'<a href="view/img/capturas?img='+urlCapture+'" target="_blank">'
+                    +'<div class="small float-right m-t-xs">'+fecha2+'</div>'
+                    +'<h4 class="text-warning">ID:'+results.insertId+'</h4>'
+                    +'<h4 class="text-danger">'+error+'</h4>'
+                    +'<div class="small">Placa:'+placa+'</div>'
+                    +'<div class="small text-muted m-t-xs">SQL: "'+sql1+'"<br><br>'
+                    +'<img width="100%" height="100" src="img/capturas/'+urlCapture+'" class="img-responsive" alt=""><br>'
+                    +'<span class="label label-'+ping_internet+'">Internet</span>'
+                    +'<span class="label label-'+ping_gacela+'">Gacela</span>'
+                    +'<span class="label label-'+ping_servidor+'">Servidor</span>'
+                    +'</div>'
+                    +'</a>'
+                    +'</li>'});
                     console.log("hubo un error");
                 }
             });
 
+    }
+
+    listarRegistros(socket){
+        try{
+            let _this=this;
+            let sql = "SELECT * FROM registro";
+            this.con.query(sql, function (error, results, fields) {
+                if(error){
+                    _this.guardarError(null,sql,"",error,socket)
+                }
+                socket.emit("cant_ej",results.length);
+                for ( let i in results){
+                    // let fecha1 = date.format(date.parse(results[i].fecha_inicio_reg,'DD-MM-YYYY HH:mm:ss'));
+                    // let fecha2 = date.format(results[i].fecha_fin_reg, 'DD-MM-YYYY HH:mm:ss');
+                    let fecha1 = new Date(results[i].fecha_inicio_reg.toString())
+                    let fechaInicio =date.format(fecha1,'DD/MM/YYYY HH:mm:ss');
+                    let fecha2 = new Date(results[i].fecha_fin_reg.toString())
+                    let fechaFin =date.format(fecha1,'DD/MM/YYYY HH:mm:ss');
+                    socket.emit("addReg",{
+                        html:'<li class="sidebar-message">'
+                        +'<h6 class="text-success">'+fechaInicio+' ~ '+fechaFin+'</h6>'
+                        +'<div class="small">Cargados: '+results[i].cargados_reg+'</div>'
+                        +'<div class="small">Poblados: '+results[i].poblados_reg+'</div>'
+                        +'<div class="small">Con datos: '+results[i].si_gacela_reg+'</div>'
+                        +'<div class="small">Sin datos: '+results[i].no_gacela_reg+'</div>'
+                        +'<div class="small">Promedio: '+results[i].promedio_reg+' seg/reg</div>'
+                        +'<div class="small">Cantidad de errores: '+results[i].cant_errores_reg+' seg/reg</div>'
+                        +'<div class="small">Tiempo de ejecucion: '+results[i].tiempo_min_reg+' min</div>'
+                        +'</div>'
+                        +'</li>'
+                    })
+                }
+            });
+        }catch(e){
+            console.log(e);//err.guardarError(null,sql,"",error,socket)
+        }
     }
 
     guardarRegistro(load,poblado,sigacela,nogacela,fechaInicio,fechaFin,datopromedio,datotrabajo,datoerrores){

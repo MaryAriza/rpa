@@ -56,16 +56,19 @@ class botScrach {
 
     async iniciarSesion(page,user,pass){
         try{
-            await page.goto(' http://consultas.laequidadseguros.coop:8081/gacelaplusF/');
+            await page.goto('http://consultas.laequidadseguros.coop:8081/gacelaplusF/login/usuarios');
             //console.log("Cargo la pagina en: "+this.count+" ms");
             this.aux=this.count;
-            //await page.screenshot({path: 'captura0.png'});
+            await page.screenshot({path: 'captura0.png'});
             await page.type('#usuario', user);
             await page.type('#pass', pass);
             await page.click("input[type='submit']");
+            await page.screenshot({path: 'captura1.png'});
+
             //console.log("dio click en el loging en: "+Number(this.count-this.aux)+" ms");
             this.aux=this.count;
         }catch(e){
+            console.log(e.stack)
             //guardar error ,hacer ping a gacela, si es false hacer alive de internet, si es alive continuar con el ping a gacela, cuando sea alive detener la ejecucion del ping e intentar realizar nuevamente la consulta, intentar 3 veces. sino no iniciar el bot hasta que se haga manualmente, si lo logra colocar como corregido.
         }
     }
@@ -79,16 +82,18 @@ class botScrach {
         const page = await browser.newPage();
         this.iniciarContador(err,socket);
         try{
+            await this.delay(1)
             await this.iniciarSesion(page,'Fsamper','Mayo2019*');
-            await this.delay(1);
+            await this.delay(5);
             await page.click(".vehiculo a");
-            //console.log("Inicio la busqueda en: "+Number(this.count-this.aux)+" ms");
+            await this.delay(2);
+            console.log("Inicio la busqueda en: "+Number(this.count-this.aux)+" ms");
             this.aux=this.count;
             this.totalRegister=arr.length;
             this.porPoblar=arr.length;
             socket.emit("totalP",this.totalRegister);
             socket.emit("cantidadP",this.porPoblar);
-            await this.buscarCadaPlaca(page,arr,g,err,socket);
+            await this.buscarCadaPlaca(page,arr.length,g,err,socket);
             let now= new Date();
             this.datefinish = date.format(now, 'YYYY/MM/DD HH:mm:ss');
             let second = date.subtract(date.parse(this.datefinish, 'YYYY/MM/DD HH:mm:ss'), date.parse(this.dateInit, 'YYYY/MM/DD HH:mm:ss')).toSeconds();
@@ -102,18 +107,54 @@ class botScrach {
             this.resetValues();
             await browser.close();
         }catch(e){
-            console.log(e.stack);
             err.guardarError(page,null,null,e,socket);
             //guardar error ,hacer ping a gacela, si es false hacer alive de internet, si es alive continuar con el ping a gacela, cuando sea alive detener la ejecucion del ping e intentar realizar nuevamente la consulta, intentar 3 veces. sino no iniciar el bot hasta que se haga manualmente, si lo logra colocar como corregido.
         }
     }
 
-    async buscarCadaPlaca(page, arr,g,err,socket){
+    async buscarCadaPlaca(page, length,g,err,socket){
+        while(length>1){
+            if(this.active){
+                try{
+                    let one_reg= await g.consultarUnNulo(g,err,socket);
+                    let r= await this.result(page,one_reg[0].placagacela,err,socket);
+                    let r = true;
+                    if(r!=false){
+                        g.actualizar_placas(one_reg.placagacela,r.aseguradora,r.fechaVencimiento,r.vigente,r.marca,r.modelo,r.tipo,r.cedula,page,err,socket);
+                        //console.log("Dio esta respuesta en : "+Number(this.count-this.aux)+" ms");
+                        this.poblados++;
+                        this.porPoblar--;
+                        socket.emit("totalPoblado",this.poblados);
+                        socket.emit("cantidadP",this.porPoblar);
+                        let now= new Date();
+                        this.datefinish = date.format(now, 'YYYY/MM/DD HH:mm:ss');
+                        let second = date.subtract(date.parse(this.datefinish, 'YYYY/MM/DD HH:mm:ss'), date.parse(this.dateInit, 'YYYY/MM/DD HH:mm:ss')).toSeconds();
+                        this.minutes = date.subtract(date.parse(this.datefinish, 'YYYY/MM/DD HH:mm:ss'), date.parse(this.dateInit, 'YYYY/MM/DD HH:mm:ss')).toMinutes();                        
+                        this.promedio =(second/this.poblados);
+                        socket.emit("datoPromedio",this.promedio.toFixed(2)+" seg/reg");
+                        socket.emit("datoTrabajo",this.minutes+" minutos");
+                        socket.emit("tiempoTomado",(this.count-this.aux)/1000);
+                        console.log("Fecha de inicio: "+this.dateInit+", fecha de fin: "+this.datefinish+", Cantidad de registros: "+this.poblados+", promedio de tiempo por cada registro: "+ this.promedio+" seg, Ultima Placa actualizada: "+one_reg[0].placagacela+", proceso hecho en "+this.minutes+" minutos");
+                        this.aux=this.count;
+                        await this.refrescarTexto(page,'#placa',12);
+                        length=await g.countNull(socket);
+                    }
+                }catch(e){
+                    err.guardarError(page,null,arr[i].placagacela,e,socket);
+                    //guardar error ,hacer ping a gacela, si es false hacer alive de internet, si es alive continuar con el ping a gacela, cuando sea alive detener la ejecucion del ping e intentar realizar nuevamente la consulta, intentar 3 veces. sino no iniciar el bot hasta que se haga manualmente, si lo logra colocar como corregido.
+                }
+            }else{
+                break;
+            }
+        }
+     }
+
+    async buscarUnaPlaca(page, arr,g,err,socket){
         for ( let i in arr){
             if(this.active){
                 try{
                     let r= await this.result(page,arr[i].placagacela,err,socket);
-                    //console.log(r);
+
                     if(r!=false){
                         g.actualizar_placas(arr[i].placagacela,r.aseguradora,r.fechaVencimiento,r.vigente,r.marca,r.modelo,r.tipo,r.cedula,page,err,socket);
                         //console.log("Dio esta respuesta en : "+Number(this.count-this.aux)+" ms");
@@ -146,9 +187,10 @@ class botScrach {
         try{
             this.count2++;
             //console.log("consultando la placa: "+placa)
+            await this.delay(3);
             await page.type('#placa', placa);
             await page.click("#consultar");
-            await this.delay(2);
+            await this.delay(5);
             let html = await page.$eval('body', e => e.outerHTML);
             let $ = cheerio.load(html);
             let a = $("#polizasVar tbody > tr td");
@@ -163,6 +205,7 @@ class botScrach {
                 let tipo=  this.evaluarTope(this.quitarTabs(b[11]));
                 if(aseguradora!="" &&vigente!="" &&fechaVencimiento!="" &&modelo!="" &&marca!=""){
                     await page.click(" #externo");
+                    await this.delay(2);
                     let c = await page.$eval('#documento', async (input,value) => {
                         return await input.value;
                     },"");

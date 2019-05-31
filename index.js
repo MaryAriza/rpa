@@ -13,7 +13,10 @@ server.listen(PORT, () => {
   console.log(`Server running in http://localhost:${PORT}`)
 })
 
-app.use(express.static(path.join(__dirname, 'view')))
+app.use(express.static(path.join(__dirname, 'view')));
+app.get('/view/img/capturas/', function (req, res) {
+  res.sendFile((path.join(__dirname,'/view/img/capturas/'+req.query.img)));
+});
 const Gacela = require("./Gacela");
 const Error_manager = require('./errorManager');
 let g = new Gacela;
@@ -46,8 +49,9 @@ io.on('connection', function(socket){
           trabajo:g.bot.minutes+" minutos",
           promedio:g.bot.promedio.toFixed(2)+" seg/reg"
         })
+        e.listarRegistros(socket);
     });
-    
+
     
 
     socket.on('desactivar', function(num){

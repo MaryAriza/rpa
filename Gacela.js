@@ -14,7 +14,7 @@ class Gacela{
     async consultarNulos(g,err,socket){
         try{
             let _this=this;
-            let sql = "SELECT * FROM pobladores.gacelabot WHERE editandogacela IS NULL";
+            let sql = "SELECT * FROM pobladores.gacela WHERE editandogacela IS NULL";
             this.con.query(sql, function (error, results, fields) {
                 if(error){
                     err.guardarError(null,sql,"",error,socket)
@@ -26,16 +26,59 @@ class Gacela{
         }
     }
 
+    async countNull(socket){
+        try{
+            let _this=this;
+            let connect = this.con;
+            let sql = "SELECT COUNT(*) FROM pobladores.gacela WHERE editandogacela IS NULL";
+            return new Promise(function(resolve,reject){
+                connect.query(sql, function (error, results, fields) {
+                    if(error){
+                        err.guardarError(null,sql,"",error,socket)
+                    }else{
+                        socket.emit("cantidadP",results[0]["COUNT(*)"]);
+                        console.log(results[0]["COUNT(*)"]);
+                        resolve(results[0]["COUNT(*)"]);
+                    }
+                });
+            })
+            
+        }catch(e){
+            console.log(e);//err.guardarError(null,sql,"",error,socket)
+        }
+    }
+
+    async consultarUnNulo(g,err,socket){
+        try{
+            let _this=this;
+            let connect = this.con;
+            let sql = "SELECT * FROM pobladores.gacela WHERE editandogacela IS NULL order by RAND() desc LIMIT 50";
+            return new Promise(function(resolve,reject){
+                connect.query(sql, function (error, results, fields) {
+                    if(error){
+                        err.guardarError(null,sql,"",error,socket)
+                    }else{
+                        resolve(results);                    
+                    }
+                });
+            })
+            
+        }catch(e){
+            console.log(e);//err.guardarError(null,sql,"",error,socket)
+        }
+    }
+
+
     apagarGacelaBot(){
         this.bot.desactivateBot();
     }
 
     async actualizar_placas(placa,aseguradora,fechaVencimiento,vigente,marca,modelo,tipo,cedula,page, err,socket){
         let fecha= this.transformarFecha(fechaVencimiento);
-        let sql="UPDATE pobladores.gacelabot SET cedulagacela='"+cedula+"', aseguradoragacela='"+aseguradora+"', modelogacela='"+modelo+"', vigentegacela='"+vigente+"',fechavencgacela='"+fecha+
+        let sql="UPDATE pobladores.gacela SET cedulagacela='"+cedula+"', aseguradoragacela='"+aseguradora+"', modelogacela='"+modelo+"', vigentegacela='"+vigente+"',fechavencgacela='"+fecha+
         "' ,marcagacela ='"+marca+"',lineagacela='"+tipo+"', fechapobladogacela = CURDATE(), editandogacela=2, asesorgacela=1 WHERE placagacela ='"+placa+"'";
         try{
-            let _this=this;
+            let s_this=this;
             this.con.query(sql,(error, results, fields)=>{
                 if (error){
                     err.guardarError(page,sql,placa,error,socket);
