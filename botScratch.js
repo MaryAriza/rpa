@@ -23,6 +23,7 @@ class botScrach {
         this.active=false;
         this.minutes=0;
         this.promedio=0;
+        this.finish=false;
     }
 
     resetValues(){
@@ -56,15 +57,13 @@ class botScrach {
 
     async iniciarSesion(page,user,pass){
         try{
+            console.log("iniciando sesion");
             await page.goto('http://consultas.laequidadseguros.coop:8081/gacelaplusF/login/usuarios');
             //console.log("Cargo la pagina en: "+this.count+" ms");
             this.aux=this.count;
-            await page.screenshot({path: 'captura0.png'});
             await page.type('#usuario', user);
             await page.type('#pass', pass);
             await page.click("input[type='submit']");
-            await page.screenshot({path: 'captura1.png'});
-
             //console.log("dio click en el loging en: "+Number(this.count-this.aux)+" ms");
             this.aux=this.count;
         }catch(e){
@@ -77,13 +76,17 @@ class botScrach {
         this.active=false;
     }
 
-    async buscarPlacas(arr,g,err,socket){
+    async buscarPlacas(arr,g,err,socket,restart){
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
-        this.iniciarContador(err,socket);
+        this.active=true;
+        if(!restart){
+            this.iniciarContador(err,socket);
+            
+        }
         try{
             await this.delay(1)
-            await this.iniciarSesion(page,'Fsamper','Mayo2019*');
+            await this.iniciarSesion(page,'Fsamper','equidad2020*');
             await this.delay(5);
             await page.click(".vehiculo a");
             await this.delay(2);
@@ -99,13 +102,16 @@ class botScrach {
             let second = date.subtract(date.parse(this.datefinish, 'YYYY/MM/DD HH:mm:ss'), date.parse(this.dateInit, 'YYYY/MM/DD HH:mm:ss')).toSeconds();
             this.promedio =(second/this.poblados)
             this.minutes = date.subtract(date.parse(this.datefinish, 'YYYY/MM/DD HH:mm:ss'), date.parse(this.dateInit, 'YYYY/MM/DD HH:mm:ss')).toMinutes();                                    
-            await err.guardarRegistro(this.totalRegister,this.poblados,this.siGacela,this.noGacela,this.dateInit,this.datefinish,this.promedio,this.minutes,err.cantErrores)
             console.log("Bot finalizado");
-            socket.emit('activarApagado', false);
-            clearInterval(this.handlerInterval);
-            socket.emit("reset",true);
-            this.resetValues();
-            await browser.close();
+            if(this.finish){
+                socket.emit('activarApagado', false);
+                clearInterval(this.handlerInterval);
+                socket.emit("reset",true);
+                this.resetValues();
+                await browser.close();
+                await err.guardarRegistro(this.totalRegister,this.poblados,this.siGacela,this.noGacela,this.dateInit,this.datefinish,this.promedio,this.minutes,err.cantErrores)
+
+            }
         }catch(e){
             err.guardarError(page,null,null,e,socket);
             //guardar error ,hacer ping a gacela, si es false hacer alive de internet, si es alive continuar con el ping a gacela, cuando sea alive detener la ejecucion del ping e intentar realizar nuevamente la consulta, intentar 3 veces. sino no iniciar el bot hasta que se haga manualmente, si lo logra colocar como corregido.
@@ -118,9 +124,8 @@ class botScrach {
                 try{
                     let one_reg= await g.consultarUnNulo(g,err,socket);
                     let r= await this.result(page,one_reg[0].placagacela,err,socket);
-                    let r = true;
                     if(r!=false){
-                        g.actualizar_placas(one_reg.placagacela,r.aseguradora,r.fechaVencimiento,r.vigente,r.marca,r.modelo,r.tipo,r.cedula,page,err,socket);
+                        g.actualizar_placas(one_reg[0].placagacela,r.aseguradora,r.fechaVencimiento,r.vigente,r.marca,r.modelo,r.tipo,r.cedula,page,err,socket);
                         //console.log("Dio esta respuesta en : "+Number(this.count-this.aux)+" ms");
                         this.poblados++;
                         this.porPoblar--;
@@ -137,10 +142,10 @@ class botScrach {
                         console.log("Fecha de inicio: "+this.dateInit+", fecha de fin: "+this.datefinish+", Cantidad de registros: "+this.poblados+", promedio de tiempo por cada registro: "+ this.promedio+" seg, Ultima Placa actualizada: "+one_reg[0].placagacela+", proceso hecho en "+this.minutes+" minutos");
                         this.aux=this.count;
                         await this.refrescarTexto(page,'#placa',12);
-                        length=await g.countNull(socket);
+                        length=await g.countNull(socket,err);
                     }
-                }catch(e){
-                    err.guardarError(page,null,arr[i].placagacela,e,socket);
+                }catch(e){s
+                    err.guardarError(page,null,one_reg[0].placagacela,e,socket);
                     //guardar error ,hacer ping a gacela, si es false hacer alive de internet, si es alive continuar con el ping a gacela, cuando sea alive detener la ejecucion del ping e intentar realizar nuevamente la consulta, intentar 3 veces. sino no iniciar el bot hasta que se haga manualmente, si lo logra colocar como corregido.
                 }
             }else{

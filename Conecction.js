@@ -15,6 +15,7 @@ class Conection{
       this.password = password;
       this.dbname = dbname;
       this.conection = null
+      this.interval = 0;
     }
       
     
@@ -28,6 +29,7 @@ class Conection{
         });
         return this.connection;
       }catch(e){
+        console.log(e.stack);
         return false;
       }   
     }

@@ -13,7 +13,10 @@ server.listen(PORT, () => {
   console.log(`Server running in http://localhost:${PORT}`)
 })
 
-app.use(express.static(path.join(__dirname, 'view')));
+app.use('/GACELA',express.static(path.join(__dirname, 'view')));
+app.get("/",function(req,res){
+  res.redirect("/GACELA");
+})
 app.get('/view/img/capturas/', function (req, res) {
   res.sendFile((path.join(__dirname,'/view/img/capturas/'+req.query.img)));
 });
@@ -29,7 +32,7 @@ io.on('connection', function(socket){
             console.log("Iniciando Bot...")
             g.bot.active=true;
             io.emit('activarApagado', true);
-            g.consultarNulos(g,e,io);
+            g.consultarNulos(g,e,io,false);
           }
         }catch(er){
             e.guardarError(null,null,null,er);
@@ -59,6 +62,7 @@ io.on('connection', function(socket){
           if(g.bot.active){
             console.log("Desactivando Bot...")
             g.apagarGacelaBot();
+            g.finalizar();
           }
       }catch(er){
           e.guardarError(null,null,null,er);

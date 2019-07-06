@@ -7,26 +7,46 @@ class Gacela{
     constructor(){
         this.coneccion = new Conection("175.0.10.201","Architect01","@DM1N1STR4D0R2016","pobladores");
         this.con =this.coneccion.crearConeccion();
+        var _this = this;
+        this.socket=null;
+        this.err=null;
         this.datos= null;
         this.bot= new botScrach();
+        this.con.on(("error"),function(err){
+            _this.handlerError(err,_this);
+        })
     }
 
-    async consultarNulos(g,err,socket){
+    handlerError(err,_this){
+        console.log(err.code);
+        this.bot.desactivateBot();
+        setTimeout(()=>{
+            _this.con = _this.coneccion.crearConeccion();
+            _this.consultarNulos(_this,_this.err,_this.socket,true)
+            _this.con.on("error",(err)=>{
+                _this.handlerError(err,_this);
+            })
+        },600000);
+    }
+
+    async consultarNulos(g,err,socket,restart){
         try{
             let _this=this;
+            this.err = err;
+            this.socket = socket;
             let sql = "SELECT * FROM pobladores.gacela WHERE editandogacela IS NULL";
             this.con.query(sql, function (error, results, fields) {
                 if(error){
                     err.guardarError(null,sql,"",error,socket)
                 }
-                _this.bot.buscarPlacas(results,g,err,socket);
+                _this.bot.buscarPlacas(results,g,err,socket,restart);
             });
         }catch(e){
             console.log(e);//err.guardarError(null,sql,"",error,socket)
         }
     }
 
-    async countNull(socket){
+    async countNull(socket,err){
         try{
             let _this=this;
             let connect = this.con;
@@ -37,7 +57,6 @@ class Gacela{
                         err.guardarError(null,sql,"",error,socket)
                     }else{
                         socket.emit("cantidadP",results[0]["COUNT(*)"]);
-                        console.log(results[0]["COUNT(*)"]);
                         resolve(results[0]["COUNT(*)"]);
                     }
                 });
@@ -71,6 +90,9 @@ class Gacela{
 
     apagarGacelaBot(){
         this.bot.desactivateBot();
+    }
+    finalizar(){
+        this.bot.finish =true;
     }
 
     async actualizar_placas(placa,aseguradora,fechaVencimiento,vigente,marca,modelo,tipo,cedula,page, err,socket){

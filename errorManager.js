@@ -10,7 +10,7 @@ let date = require('date-and-time');
 class ErrorManager{
 
     constructor(){
-        this.coneccion = new Conection("localhost","root","25840504","registrosbot");
+        this.coneccion = new Conection("localhost","root","","registrobot");
         this.con =this.coneccion.crearConeccion();
         this.cantErrores=0;
     }
