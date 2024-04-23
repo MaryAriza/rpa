@@ -6,7 +6,7 @@ const http = require('http');
 const app = express()//instancia de express
 const server = http.createServer(app)//creando el server con http y express como handle request
 const io = socketio(server)//iniciando el server de socket.io
-const PORT = process.env.PORT || 3022
+const PORT = process.env.PORT || 3028
 
 //corriendo el servidor
 server.listen(PORT, () => {

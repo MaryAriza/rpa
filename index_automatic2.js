@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3022
 
 //corriendo el servidor
 server.listen(PORT, () => {
-  console.log(`Server running in http://localhost:${PORT}`)
+  console.log(`Servidor corriendo en http://localhost:${PORT}`)
 })
 
 app.use('/GACELA', express.static(path.join(__dirname, 'view')));
@@ -25,6 +25,18 @@ const Error_manager = require('./errorManager');
 let g = new Gacela(PORT);
 let e = new Error_manager;
 //escuchando el evento connection
+(()=>{
+  try {
+    if (!g.bot.active) {
+      console.log("Iniciando Bot...")
+      g.bot.active = true;
+      io.emit('activarApagado', true);
+      g.consultarNulos(g, e, io, false);
+    }
+  } catch (er) {
+    e.guardarError(null, null, null, er);
+  }
+})()
 io.on('connection', function (socket) {
   socket.on('activar', function (num) {
     try {
